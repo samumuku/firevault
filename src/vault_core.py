@@ -35,32 +35,44 @@ class FireVaultCore:
                 id INTEGER PRIMARY KEY,
                 site TEXT UNIQUE,
                 username TEXT,
-                encrypted_password TEXT
+                encrypted_pwd TEXT
             )
         ''')
         conn.commit()
         conn.close()
-
+        
     def add_password(self, site, username, password):
-        encrypted_pwd = self.cipher.encrypt(password.encode()).decode()
+        # 1. Clean up inputs (remove accidental spaces)
+        site = site.strip()
+        username = username.strip()
         
         try:
+            encrypted_pwd = self.cipher.encrypt(password.encode()).decode()
             conn = sqlite3.connect(self.db_name)
             cursor = conn.cursor()
-            cursor.execute("INSERT OR REPLACE INTO secrets (site, username, encrypted_password) VALUES (?, ?, ?)", 
-                           (site, username, encrypted_password))
+            cursor.execute("INSERT OR REPLACE INTO secrets (site, username, encrypted_pwd) VALUES (?, ?, ?)", 
+                           (site, username, encrypted_pwd))
             conn.commit()
             conn.close()
-            return True
+            return True, "Success"
         except Exception as e:
-            print(f"Error: {e}")
-            return False
+            return False, str(e)  # Return the actual error message
+
+    def get_all_sites(self):
+        """Returns a list of all website names stored in the DB"""
+        conn = sqlite3.connect(self.db_name)
+        cursor = conn.cursor()
+        cursor.execute("SELECT site FROM secrets")
+        results = cursor.fetchall() # Returns list of tuples: [('etml.ch',), ('google.com',)]
+        conn.close()
+        # Clean it up into a simple list of strings
+        return [r[0] for r in results]
 
     def get_password(self, site):
         conn = sqlite3.connect(self.db_name)
         cursor = conn.cursor()
         # Find entries where the site contains the search term (e.g., "google" finds "google.com")
-        cursor.execute("SELECT username, encrypted_password FROM secrets WHERE site LIKE ?", (f'%{site}%',))
+        cursor.execute("SELECT username, encrypted_pwd FROM secrets WHERE site LIKE ?", (f'%{site}%',))
         result = cursor.fetchone()
         conn.close()
 
