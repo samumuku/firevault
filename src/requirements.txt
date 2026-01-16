@@ -1,2 +1,5 @@
 cryptography
 pyperclip
+flask
+flask-cors
+pyinstaller

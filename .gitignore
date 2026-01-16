@@ -1,0 +1,9 @@
+# --- Python temp files
+__pycache__/
+*.pyc
+
+# --- DB Files
+*.db
+
+# --- JSON files
+*.json

@@ -151,7 +151,7 @@ class VaultDashboard(ctk.CTkFrame):
         self.right_header = ctk.CTkFrame(self.content_area, fg_color="transparent")
         self.right_header.pack(fill="x", pady=(0, 20))
         
-        self.lbl_site_title = ctk.CTkLabel(self.right_header, text="", font=("Arial", 32, "bold"), text_color="white")
+        self.lbl_site_title = ctk.CTkLabel(self.right_header, text="", font=("Arial", 32, "bold"), text_color="#2b2b2b")
         self.lbl_site_title.pack(side="left")
 
         self.local_search = ctk.CTkEntry(self.right_header, placeholder_text="Filter accounts...", width=200)
